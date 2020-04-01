@@ -1,1 +1,1 @@
-# mandelbrot-zoom
+Just run *Mandelbrot.sh* and you will get your own zoom into Mandelbrot set (after dozens of hours)!
