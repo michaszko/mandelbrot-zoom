@@ -17,7 +17,7 @@ const int H = 1080;
 // Maximal color
 const int alpha = 255;
 // Maximal iteration
-const int max_iteration = 10000;
+const int max_iteration = 1000;
 // zoom factor
 const long double s = 0.97;
 
@@ -115,9 +115,12 @@ void mandelbrotset(string fileName, long double xmin, long double xmax,
       sigma = static_cast<int>(alpha * kappa);
 
       // if (kappa < 0.2) {
-        pixel.color_r = sigma * 2;
-        pixel.color_g = sigma * 5;
-        pixel.color_b = sigma * 7;
+      // pixel.color_r = (sigma * 0.5);
+      // pixel.color_g = (sigma * 0.75);
+      // pixel.color_b = (sigma * 2);
+      pixel.color_r = sigma * 2;
+      pixel.color_g = sigma * 5;
+      pixel.color_b = sigma * 7;
       // }
 
       // else if (kappa >= 0.2) {
@@ -164,6 +167,8 @@ int main(int argc, char *argv[]) {
       name << "Pic/Fraktal_00" << i << ".ppm";
     } else if (i < 1000) {
       name << "Pic/Fraktal_0" << i << ".ppm";
+    } else {
+      name << "Pic/Fraktal_" << i << ".ppm";
     }
 
     cout << "Just made " << i << " fractal\n";

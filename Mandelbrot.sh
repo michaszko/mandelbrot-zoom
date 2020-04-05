@@ -6,6 +6,8 @@
 
 SECONDS=0
 STEP=100
+# test value
+# STEP = 1
 
 # Directory for pictures and movie
 mkdir -p Pic
@@ -14,8 +16,10 @@ mkdir -p Pic
 g++ Fraktal.cpp -o Fraktal.o
 
 # Create pictures in groups of $STEP 
-for i in {1...10}; do
-
+for i in {0..9}; do
+# for test
+# for i in {0..10}; do
+	
 	echo "Create frames from "$(($i*$STEP))" till "$((($i+1)*$STEP))"..."
 	# Arguments in order - 
 	# 1) Number of first frame
