@@ -119,9 +119,12 @@ void mandelbrotset(string fileName, long double xmin, long double xmax,
       // pixel.color_r = (sigma * 0.5);
       // pixel.color_g = (sigma * 0.75);
       // pixel.color_b = (sigma * 2);
-      pixel.color_r = sigma * 1996 % 100;
-      pixel.color_g = sigma * 966 % 180;
-      pixel.color_b = sigma * 1410 % 255;
+      // pixel.color_r = sigma * 1996 % 100;
+      // pixel.color_g = sigma * 966 % 180;
+      // pixel.color_b = sigma * 1410 % 255;
+      pixel.color_r = sigma * 1612 % 180;
+      pixel.color_g = sigma * 1905 % 220;
+      pixel.color_b = sigma * 1917 % 255;
       // }
 
       // else if (kappa >= 0.2) {
