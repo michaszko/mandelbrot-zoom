@@ -33,5 +33,6 @@
 
 # Pictures and movies
 *.jpg
-*.ppg
+*.ppm
 *.mp4
+!Test.jpg
