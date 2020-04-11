@@ -1,6 +1,7 @@
 //**************************
 // Mandelbrot Fractal
 //**************************
+#define TEST  0
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -17,7 +18,7 @@ const int H = 1080;
 // Maximal color
 const int alpha = 255;
 // Maximal iteration
-const int max_iteration = 1000;
+const int max_iteration = 10000;
 // zoom factor
 const long double s = 0.97;
 
@@ -118,9 +119,9 @@ void mandelbrotset(string fileName, long double xmin, long double xmax,
       // pixel.color_r = (sigma * 0.5);
       // pixel.color_g = (sigma * 0.75);
       // pixel.color_b = (sigma * 2);
-      pixel.color_r = sigma * 2;
-      pixel.color_g = sigma * 5;
-      pixel.color_b = sigma * 7;
+      pixel.color_r = sigma * 1996 % 100;
+      pixel.color_g = sigma * 966 % 180;
+      pixel.color_b = sigma * 1410 % 255;
       // }
 
       // else if (kappa >= 0.2) {
@@ -144,8 +145,41 @@ void mandelbrotset(string fileName, long double xmin, long double xmax,
   file.close();
 }
 
+// testting function for color palette
+void palette(string fileName) {
+  ofstream file;
+
+  file.open(fileName.c_str());
+
+  // Insert header
+  file << "P3" << endl;
+  file << "# Fraktal Mandelbota" << endl;
+  file << 100 << " " << 100 << endl;
+  file << alpha << endl;
+
+  for (int sigma = 1; sigma <= 100; sigma += 1) {
+    for (int j = 0; j < 100; ++j) {
+      Pixel pixel;
+
+      pixel.color_r = sigma * 1996 % 100;
+      pixel.color_g = sigma * 966 % 180;
+      pixel.color_b = sigma * 1410 % 255;
+
+      file << pixel.color_r << " " << pixel.color_g << " " << pixel.color_b
+           << " ";
+    }
+    file << endl;
+  }
+}
+
 int main(int argc, char *argv[]) {
   ostringstream name;
+
+  // Run a test -- print pallete of colors
+  if (TEST) {
+    palette("Test.ppm");
+    return 0;
+  }
 
   // first and last frame number (1 is maximally zoomed out, the higher number
   // gets the more zoomed it is; it breaks around 3000s)
