@@ -1,6 +1,7 @@
 //**************************
 // Mandelbrot Fractal
 //**************************
+// Change to 1 if you want to print only palette 
 #define TEST  0
 #include <cmath>
 #include <cstdlib>
@@ -12,19 +13,15 @@
 using namespace std;
 
 // Resolution of image
-const int W = 1920;
-const int H = 1080;
+const int WIDTH = 1920;
+const int HEIGHT = 1080;
 
 // Maximal color
-const int alpha = 255;
+const int max_color_value = 255;
 // Maximal iteration
 const int max_iteration = 10000;
 // zoom factor
-const long double s = 0.97;
-
-long double ss;
-long double kappa;
-int sigma;
+const long double zoom_factor = 0.97;
 
 // Position of point we are zooming in
 // long double X = -0.789374599271466936740382412558;
@@ -87,33 +84,33 @@ void mandelbrotset(string fileName, long double xmin, long double xmax,
 
   file.open(fileName.c_str());
 
-  // Insert header
+  // Insert header (nedded for .ppm files)
   file << "P3" << endl;
   file << "# Fraktal Mandelbota" << endl;
-  file << W << " " << H << endl;
-  file << alpha << endl;
+  file << WIDTH << " " << HEIGHT << endl;
+  file << max_color_value << endl;
 
   // Width and height of one pixel
-  long double dW = (xmax - xmin) / (long double)W;
-  long double dH = (ymax - ymin) / (long double)H;
+  long double dWIDTH = (xmax - xmin) / (long double)WIDTH;
+  long double dHEIGHT = (ymax - ymin) / (long double)HEIGHT;
 
   // For each pixel ...
-  for (long double j = 0; j < H; j++)
-    for (long double i = 0; i < W; i++) {
+  for (long double j = 0; j < HEIGHT; j++)
+    for (long double i = 0; i < WIDTH; i++) {
       Pixel pixel;
       int iteration;
 
       // calculate the coordinates of a pixel
-      pixel.x = xmin + (dW * i);
-      pixel.y = ymin + (dH * j);
+      pixel.x = xmin + (dWIDTH * i);
+      pixel.y = ymin + (dHEIGHT * j);
 
       // calculate if it converges
       iteration = mandelbrot(pixel.x, pixel.y, max_iteration);
 
       // play with color (here you can try your ideas, personally I dont have
       // idea how to predict what Ill get)
-      kappa = (double)iteration / (double)max_iteration;
-      sigma = static_cast<int>(alpha * kappa);
+      double kappa = (double)iteration / (double)max_iteration;
+      int sigma = static_cast<int>(max_color_value * kappa);
 
       // if (kappa < 0.2) {
       // pixel.color_r = (sigma * 0.5);
@@ -158,7 +155,7 @@ void palette(string fileName) {
   file << "P3" << endl;
   file << "# Fraktal Mandelbota" << endl;
   file << 100 << " " << 100 << endl;
-  file << alpha << endl;
+  file << max_color_value << endl;
 
   for (int sigma = 1; sigma <= 100; sigma += 1) {
     for (int j = 0; j < 100; ++j) {
@@ -190,11 +187,12 @@ int main(int argc, char *argv[]) {
   int end = atoi(argv[2]);
 
   // initial zoom
-  ss = pow(s, begining);
+  long double current_zoom = pow(zoom_factor, begining);
 
   for (int i = begining; i < end; i++) {
+    
     // zoom chcnges by zooming factor
-    ss *= s;
+    current_zoom *= zoom_factor;
 
     name.str("");
 
@@ -211,7 +209,7 @@ int main(int argc, char *argv[]) {
     cout << "Just made " << i << " fractal\n";
 
     // create frame
-    mandelbrotset(name.str(), X - ss, X + ss, Y - ss, Y + ss);
+    mandelbrotset(name.str(), X - current_zoom, X + current_zoom, Y - current_zoom, Y + current_zoom);
   }
 
   return 0;
