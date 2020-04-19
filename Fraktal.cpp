@@ -1,8 +1,8 @@
 //**************************
 // Mandelbrot Fractal
 //**************************
-// Change to 1 if you want to print only palette 
-#define TEST  0
+// Change to 1 if you want to print only palette
+#define TEST 0
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -29,13 +29,87 @@ const long double zoom_factor = 0.97;
 long double X = -1.477110786384222313461222586803179083557;
 long double Y = 0.003322002718062184557764259218386616609;
 
+// abs definition
+float abs(float a) {
+  if (a >= 0)
+    return a;
+  else
+    return -a;
+}
+
 // Pixel structure - position and color
 struct Pixel {
+  // position
   long double x;
   long double y;
-  int color_r;
-  int color_g;
-  int color_b;
+  // hue, saturation and value
+  float color_h;
+  float color_s;
+  float color_v;
+  // converetr to RGB
+  int color_r() {
+    float r = 0;
+
+    if (color_h >= 0 and color_h < 60) {
+      r += color_v * color_s;
+    } else if (color_h >= 60 and color_h < 120) {
+      r += color_v * color_s * (1 - abs(fmod(color_h / 60.0, 2) - 1));
+    } else if (color_h >= 120 and color_h < 180) {
+      r += 0;
+    } else if (color_h >= 180 and color_h < 240) {
+      r += 0;
+    } else if (color_h >= 240 and color_h < 300) {
+      r += color_v * color_s * (1 - abs(fmod(color_h / 60.0, 2) - 1));
+    } else if (color_h >= 300 and color_h <= 360) {
+      r += color_v * color_s;
+    }
+
+    r += color_v - color_v * color_s;
+
+    return r * 255;
+  }
+  int color_g() {
+    float g = 0;
+
+    if (color_h >= 0 and color_h < 60) {
+      g += color_v * color_s * (1 - abs(fmod(color_h / 60.0, 2) - 1));
+    } else if (color_h >= 60 and color_h < 120) {
+      g += color_v * color_s;
+    } else if (color_h >= 120 and color_h < 180) {
+      g += color_v * color_s;
+    } else if (color_h >= 180 and color_h < 240) {
+      g += color_v * color_s * (1 - abs(fmod(color_h / 60.0, 2) - 1));
+    } else if (color_h >= 240 and color_h < 300) {
+      g += 0;
+    } else if (color_h >= 300 and color_h <= 360) {
+      g += 0;
+    }
+
+    g += color_v - color_v * color_s;
+
+    return g * 255;
+  };
+  int color_b() {
+    float b = 0;
+
+    if (color_h >= 0 and color_h < 60) {
+      b += 0;
+    } else if (color_h >= 60 and color_h < 120) {
+      b += 0;
+    } else if (color_h >= 120 and color_h < 180) {
+      b += color_v * color_s * (1 - abs(fmod(color_h / 60.0, 2) - 1));
+    } else if (color_h >= 180 and color_h < 240) {
+      b += color_v * color_s;
+    } else if (color_h >= 240 and color_h < 300) {
+      b += color_v * color_s;
+    } else if (color_h >= 300 and color_h <= 360) {
+      b += color_v * color_s * (1 - abs(fmod(color_h / 60.0, 2) - 1));
+    }
+
+    b += color_v - color_v * color_s;
+
+    return b * 255;
+  };
 };
 
 // Iteration of one pixel
@@ -110,36 +184,22 @@ void mandelbrotset(string fileName, long double xmin, long double xmax,
       // play with color (here you can try your ideas, personally I dont have
       // idea how to predict what Ill get)
       double kappa = (double)iteration / (double)max_iteration;
-      int sigma = static_cast<int>(max_color_value * kappa);
 
-      // if (kappa < 0.2) {
-      // pixel.color_r = (sigma * 0.5);
-      // pixel.color_g = (sigma * 0.75);
-      // pixel.color_b = (sigma * 2);
-      // pixel.color_r = sigma * 1996 % 100;
-      // pixel.color_g = sigma * 966 % 180;
-      // pixel.color_b = sigma * 1410 % 255;
-      pixel.color_r = sigma * 1612 % 180;
-      pixel.color_g = sigma * 1905 % 220;
-      pixel.color_b = sigma * 1917 % 255;
-      // }
+      // coloring in RGB
+      // int sigma = static_cast<int>(max_color_value * kappa);
+      //
+      // pixel.color_r = sigma * 1612 % 180;
+      // pixel.color_g = sigma * 1905 % 220;
+      // pixel.color_b = sigma * 1917 % 255;
 
-      // else if (kappa >= 0.2) {
-      //   pixel.color_r = sigma % 32 * 8;
-      //   pixel.color_g = sigma % 32 * 8;
-      //   pixel.color_b = sigma % 128 * 2;
-      // }
+      // coloring in HSV
+      pixel.color_h = 180;
+      pixel.color_s = 1;
+      pixel.color_v = fmod(kappa * 10, 10);
 
-      // else
-      // {
-      // 	pixel.color_r = sigma % 8 * 32;
-      // 	pixel.color_g = sigma % 8 * 32;
-      // 	pixel.color_b = sigma % 16 * 16;
-      // }
-
-      // save pixel to file
-      file << pixel.color_r << " " << pixel.color_g << " " << pixel.color_b
-           << endl;
+      // save pixel to file -- always n RGB
+      file << pixel.color_r() << " " << pixel.color_g() << " "
+           << pixel.color_b() << endl;
     }
 
   file.close();
@@ -157,16 +217,20 @@ void palette(string fileName) {
   file << 100 << " " << 100 << endl;
   file << max_color_value << endl;
 
-  for (int sigma = 1; sigma <= 100; sigma += 1) {
+  for (float sigma = 1; sigma <= 360; sigma += 1) {
     for (int j = 0; j < 100; ++j) {
       Pixel pixel;
 
-      pixel.color_r = sigma * 1996 % 100;
-      pixel.color_g = sigma * 966 % 180;
-      pixel.color_b = sigma * 1410 % 255;
+      // pixel.color_r = sigma * 1996 % 100;
+      // pixel.color_g = sigma * 966 % 180;
+      // pixel.color_b = sigma * 1410 % 255;
 
-      file << pixel.color_r << " " << pixel.color_g << " " << pixel.color_b
-           << " ";
+      pixel.color_h = sigma;
+      pixel.color_s = 1;
+      pixel.color_v = 1;
+
+      file << pixel.color_r() << " " << pixel.color_g() << " "
+           << pixel.color_b() << " ";
     }
     file << endl;
   }
@@ -190,7 +254,6 @@ int main(int argc, char *argv[]) {
   long double current_zoom = pow(zoom_factor, begining);
 
   for (int i = begining; i < end; i++) {
-    
     // zoom chcnges by zooming factor
     current_zoom *= zoom_factor;
 
@@ -209,7 +272,8 @@ int main(int argc, char *argv[]) {
     cout << "Just made " << i << " fractal\n";
 
     // create frame
-    mandelbrotset(name.str(), X - current_zoom, X + current_zoom, Y - current_zoom, Y + current_zoom);
+    mandelbrotset(name.str(), X - current_zoom, X + current_zoom,
+                  Y - current_zoom, Y + current_zoom);
   }
 
   return 0;
